@@ -34,9 +34,10 @@ private:
     bool vehicle_created = false; // obstacle generation should wait until player/vehicle is created... this var controls that
     //bool shot_fired = false;
     void move_my_vehicle();
-    void generate_obstacle();
+    void generate_obstacles();
     void generate_player_shot(int, int);
     void change_inner_board_value(int, int, int);
+    void change_inner_board_value(int, int);
     int get_inner_board_cell(int, int);
     void post_game_over();
     bool check_collision_from_vehicle(int, int);

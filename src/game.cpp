@@ -27,7 +27,7 @@ void Game::launch_game() {
     _board->draw_board();
 
     // generating and moving obstacle continuously
-    std::future<void> obstacle_thread = std::async(std::launch::async, &Game::generate_obstacle, this);
+    std::future<void> obstacle_thread = std::async(std::launch::async, &Game::generate_obstacles, this);
 
     // creating my vehicle thread
     std::future<void> vehicle_thread = std::async(std::launch::async, &Game::move_my_vehicle, this);
@@ -127,7 +127,7 @@ void Game::move_my_vehicle() {
     } 
 }
 
-void Game::generate_obstacle() {
+/*void Game::generate_obstacle() {
     while(!vehicle_created) {
         // wait till vehicle isn't created
         std::unique_lock<std::mutex> locker(_mutex);
@@ -147,6 +147,7 @@ void Game::generate_obstacle() {
             change_inner_board_value(row, i, 1);
             cols.push_back(i);
         }
+        int row = 0;
         _board->update_cell(row, cols, 1);
         
         //moving downward
@@ -168,6 +169,25 @@ void Game::generate_obstacle() {
         if(!game_should_go_on) break; 
         score++; // each obstacle goes out of the board, score increases.
     }  
+}*/
+
+void Game::generate_obstacles() {
+    while(!vehicle_created) {
+        // wait till vehicle isn't created
+        std::unique_lock<std::mutex> locker(_mutex);
+        _cv.wait(locker);
+    }
+
+    int row = 0;
+    while(game_should_go_on) {
+        change_inner_board_value(row, 1);  
+        //std::this_thread::sleep_for(std::chrono::milliseconds(get_obstacle_delay())); 
+        std::this_thread::sleep_for(std::chrono::seconds(1));       
+        //print_inner_board();
+        _board->update_cells(row);
+        
+        row++;
+    }
 }
 
 void Game::generate_player_shot(int row, int col) {
@@ -227,6 +247,13 @@ void Game::stop_game() {
 void Game::change_inner_board_value(int b_row, int b_col, int val) {
     std::lock_guard<std::mutex> locker(_mutex);
     _inner_board[b_row][b_col] = val;
+}
+
+void Game::change_inner_board_value(int row, int val) {
+    std::lock_guard<std::mutex> locker(_mutex);
+    for(int c = 0; c < _col; c++) {
+        _inner_board[row][c] = val;
+    }
 }
 
 int Game::get_inner_board_cell(int row, int col) {

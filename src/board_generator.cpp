@@ -41,3 +41,10 @@ void Board_Generator::update_cell(int row, vector<int> &cols, int val) {
     }
     wrefresh(_win);
 }
+
+void Board_Generator::update_cells(int row) {
+    for(int col=1; col <= _width-2; col++) {
+        mvwprintw(_win, row+1, col, "-");
+    }
+    wrefresh(_win);
+}
