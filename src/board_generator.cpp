@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <board_generator.h>
 #include <game.h>
@@ -42,9 +43,11 @@ void Board_Generator::update_cell(int row, vector<int> &cols, int val) {
     wrefresh(_win);
 }
 
-void Board_Generator::update_cells(int row) {
-    for(int col=1; col <= _width-2; col++) {
-        mvwprintw(_win, row+1, col, "-");
+void Board_Generator::update_cells(int row, int val) {
+    std::lock_guard<std::mutex> locker(_mutex);
+    const char *new_val = (val == 0)? " " : "-";
+    for(int col = 1; col <= _width-2; col++) {
+        mvwprintw(_win, row+1, col, new_val);
     }
     wrefresh(_win);
 }

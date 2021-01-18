@@ -178,7 +178,7 @@ void Game::generate_obstacles() {
         _cv.wait(locker);
     }
 
-    int row = 0;
+    /*int row = 0;
     while(game_should_go_on) {
         change_inner_board_value(row, 1);  
         //std::this_thread::sleep_for(std::chrono::milliseconds(get_obstacle_delay())); 
@@ -187,6 +187,35 @@ void Game::generate_obstacles() {
         _board->update_cells(row);
         
         row++;
+    }*/
+
+    std::async(&Game::generate_single_obstacle, this);
+
+    /*std::vector<std::future<void>> obstacles;
+
+    while(game_should_go_on) {
+        obstacles.emplace_back(std::async(&Game::generate_single_obstacle, this));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+    }*/
+}
+
+void Game::generate_single_obstacle() {
+    int row = 0;
+    change_inner_board_value(row, 1);
+    _board->update_cells(row, 1);
+    print_inner_board();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    for(int r = 0; r < _row; r++) {
+    //for(int r = 0; r < 3; r++) {    
+        change_inner_board_value(r, 0);
+        _board->update_cells(r, 0);
+        if((r+1) < _row) {
+            change_inner_board_value(r+1, 1);
+            _board->update_cells(r+1, 1);
+        }
+        print_inner_board();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }
 

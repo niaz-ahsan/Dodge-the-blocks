@@ -35,6 +35,7 @@ private:
     //bool shot_fired = false;
     void move_my_vehicle();
     void generate_obstacles();
+    void generate_single_obstacle();
     void generate_player_shot(int, int);
     void change_inner_board_value(int, int, int);
     void change_inner_board_value(int, int);

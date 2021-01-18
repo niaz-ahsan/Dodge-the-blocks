@@ -16,7 +16,7 @@ public:
     void draw_board();
     void update_cell(int, int, int, int, int); // specially for updating player/vehicle state change
     void update_cell(int, vector<int>&, int); // specially for blocks state change
-    void update_cells(int); // specially for obstacles row wise
+    void update_cells(int, int); // specially for obstacles row wise
 private:
     unsigned int _length;
     unsigned int _width; 
