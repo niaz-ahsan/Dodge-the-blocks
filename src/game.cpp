@@ -37,7 +37,6 @@ void Game::launch_game() {
     // returns once game is over
     vehicle_thread.wait();
     obstacle_thread.wait();
-    //obs_thread.wait();
 
     // display text after game is over
     post_game_over();
@@ -216,10 +215,15 @@ void Game::generate_player_shot(int row, int col) {
     
     // taking bullet upward to destroy blocks/obstacles
     for(int i = bullet_row-1; i >= 0; i--) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
         change_inner_board_value(i, bullet_col, 3);
         change_inner_board_value(i+1, bullet_col, 0);
         _board->update_cell(i, bullet_col, 3, i+1, bullet_col);
+        if(i == 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            change_inner_board_value(i, bullet_col, 0);
+            _board->empty_the_cell(i, bullet_col);
+        }
         //print_inner_board();
     }
 }

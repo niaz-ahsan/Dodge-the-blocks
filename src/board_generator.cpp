@@ -61,3 +61,9 @@ void Board_Generator::update_cells(int row, int val) {
     }
     wrefresh(_win);
 }
+
+void Board_Generator::empty_the_cell(int row, int col) {
+    std::lock_guard<std::mutex> locker(_mutex);
+    mvwprintw(_win, row+1, col+1, " ");
+    wrefresh(_win);
+}
