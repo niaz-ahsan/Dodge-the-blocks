@@ -176,27 +176,13 @@ void Game::generate_obstacles() {
         // wait till vehicle isn't created
         std::unique_lock<std::mutex> locker(_mutex);
         _cv.wait(locker);
-    }
+    }   
 
-    
-
-    /*std::thread obs(&Game::generate_single_obstacle, this);
-    obs.detach();
-
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-
-    std::thread obs1(&Game::generate_single_obstacle, this);
-    obs1.detach(); */    
-
-    //int idx = 0;
     while(game_should_go_on) {
-        //idx++;
-        //obstacles.emplace_back(std::async(std::launch::async, &Game::generate_single_obstacle, this));
         std::thread obs(&Game::generate_single_obstacle, this);
         obs.detach();
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-
 }
 
 void Game::generate_single_obstacle() {
@@ -204,7 +190,7 @@ void Game::generate_single_obstacle() {
     change_inner_board_value(row, 1);
     _board->update_cells(row, 1);
     //print_inner_board();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     for(int r = 0; r < _row; r++) {   
         change_inner_board_value(r, 0);
@@ -214,7 +200,7 @@ void Game::generate_single_obstacle() {
             _board->update_cells(r+1, 1);
         }
         //print_inner_board();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
 
