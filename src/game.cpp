@@ -180,38 +180,26 @@ void Game::generate_obstacles() {
 
     
 
-    std::thread obs(&Game::generate_single_obstacle, this);
+    /*std::thread obs(&Game::generate_single_obstacle, this);
     obs.detach();
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
     std::thread obs1(&Game::generate_single_obstacle, this);
-    obs1.detach();    
+    obs1.detach(); */    
 
-    //std::async(std::launch::async, &Game::generate_single_obstacle, this);
-
-    /*std::this_thread::sleep_for(std::chrono::seconds(3));
-
-    std::async(std::launch::async, &Game::generate_single_obstacle, this);
-
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-
-    std::async(std::launch::async, &Game::generate_single_obstacle, this); */
-
-    /*std::vector<std::future<void>> obstacles;
-
-    int idx = 0;
-    while(idx < 3) {
-        idx++;
-        obstacles.emplace_back(std::async(std::launch::async, &Game::generate_single_obstacle, this));
+    //int idx = 0;
+    while(game_should_go_on) {
+        //idx++;
+        //obstacles.emplace_back(std::async(std::launch::async, &Game::generate_single_obstacle, this));
+        std::thread obs(&Game::generate_single_obstacle, this);
+        obs.detach();
         std::this_thread::sleep_for(std::chrono::seconds(2));
-    }*/
+    }
 
 }
 
 void Game::generate_single_obstacle() {
-    //printw("I am here"); print_inner_board(); return;
-    
     int row = 0;
     change_inner_board_value(row, 1);
     _board->update_cells(row, 1);
