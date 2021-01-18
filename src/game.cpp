@@ -7,8 +7,9 @@
 /*
 Board value:
 0 - Empty cell
-1 - Obstacle
-2 - Vehicle
+1 - Obstacle (-)
+2 - Vehicle (*)
+3 - Player bullet (|)
 */
 
 void Game::load_game() {
@@ -28,7 +29,6 @@ void Game::launch_game() {
 
     // generating and moving obstacle continuously
     std::future<void> obstacle_thread = std::async(std::launch::async, &Game::generate_obstacles, this);
-    //std::async(std::launch::async, &Game::generate_single_obstacle, this);
 
     // creating my vehicle thread
     std::future<void> vehicle_thread = std::async(std::launch::async, &Game::move_my_vehicle, this);
@@ -118,7 +118,9 @@ void Game::move_my_vehicle() {
                 break; 
             case 32: {
                     // Shot should be fired
-                    std::async(&Game::generate_player_shot, this, vehicle_row, vehicle_col);
+                    // std::async(std::launch::async, &Game::generate_player_shot, this, vehicle_row, vehicle_col);
+                    std::thread bullet_thread(&Game::generate_player_shot, this, vehicle_row, vehicle_col);
+                    bullet_thread.detach();
                     break; 
                 }   
             default:
@@ -205,8 +207,21 @@ void Game::generate_single_obstacle() {
 }
 
 void Game::generate_player_shot(int row, int col) {
-    printw("Shot should be fired now!");
-    wrefresh(_win);
+    // bullet will start its journey from the above row and same col where vehicle is placed
+    int bullet_row = row - 1;
+    int bullet_col = col;
+    change_inner_board_value(bullet_row, bullet_col, 3);
+    _board->update_cell(bullet_row, bullet_col, 3);
+    //print_inner_board();
+    
+    // taking bullet upward to destroy blocks/obstacles
+    for(int i = bullet_row-1; i >= 0; i--) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        change_inner_board_value(i, bullet_col, 3);
+        change_inner_board_value(i+1, bullet_col, 0);
+        _board->update_cell(i, bullet_col, 3, i+1, bullet_col);
+        //print_inner_board();
+    }
 }
 
 bool Game::check_collision_from_obstacle(int row, int col) {

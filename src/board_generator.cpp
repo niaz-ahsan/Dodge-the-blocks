@@ -27,8 +27,16 @@ void Board_Generator::draw_board() {
 
 void Board_Generator::update_cell(int row, int col, int val, int prev_row, int prev_col) {
     std::lock_guard<std::mutex> locker(_mutex);
-    mvwprintw(_win, row+1, col+1, "*");
+    const char *new_val = (val == 2)? "*" : "|";
+    mvwprintw(_win, row+1, col+1, new_val);
     mvwprintw(_win, prev_row+1, prev_col+1, " ");
+    wrefresh(_win); 
+}
+
+void Board_Generator::update_cell(int row, int col, int val) {
+    std::lock_guard<std::mutex> locker(_mutex);
+    const char *new_val = (val == 2)? "*" : "|";
+    mvwprintw(_win, row+1, col+1, new_val);
     wrefresh(_win); 
 }
 
