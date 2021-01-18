@@ -28,16 +28,16 @@ void Game::launch_game() {
 
     // generating and moving obstacle continuously
     std::future<void> obstacle_thread = std::async(std::launch::async, &Game::generate_obstacles, this);
+    //std::async(std::launch::async, &Game::generate_single_obstacle, this);
 
     // creating my vehicle thread
     std::future<void> vehicle_thread = std::async(std::launch::async, &Game::move_my_vehicle, this);
-
-    // generating player shot thread
-    //std::future<void> player_shooting_thread = std::async(std::launch::async, &Game::generate_player_shot, this);
+    
 
     // returns once game is over
     vehicle_thread.wait();
     obstacle_thread.wait();
+    //obs_thread.wait();
 
     // display text after game is over
     post_game_over();
@@ -178,44 +178,55 @@ void Game::generate_obstacles() {
         _cv.wait(locker);
     }
 
-    /*int row = 0;
-    while(game_should_go_on) {
-        change_inner_board_value(row, 1);  
-        //std::this_thread::sleep_for(std::chrono::milliseconds(get_obstacle_delay())); 
-        std::this_thread::sleep_for(std::chrono::seconds(1));       
-        //print_inner_board();
-        _board->update_cells(row);
-        
-        row++;
-    }*/
+    
 
-    std::async(&Game::generate_single_obstacle, this);
+    std::thread obs(&Game::generate_single_obstacle, this);
+    obs.detach();
+
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
+    std::thread obs1(&Game::generate_single_obstacle, this);
+    obs1.detach();    
+
+    //std::async(std::launch::async, &Game::generate_single_obstacle, this);
+
+    /*std::this_thread::sleep_for(std::chrono::seconds(3));
+
+    std::async(std::launch::async, &Game::generate_single_obstacle, this);
+
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
+    std::async(std::launch::async, &Game::generate_single_obstacle, this); */
 
     /*std::vector<std::future<void>> obstacles;
 
-    while(game_should_go_on) {
-        obstacles.emplace_back(std::async(&Game::generate_single_obstacle, this));
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+    int idx = 0;
+    while(idx < 3) {
+        idx++;
+        obstacles.emplace_back(std::async(std::launch::async, &Game::generate_single_obstacle, this));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }*/
+
 }
 
 void Game::generate_single_obstacle() {
+    //printw("I am here"); print_inner_board(); return;
+    
     int row = 0;
     change_inner_board_value(row, 1);
     _board->update_cells(row, 1);
-    print_inner_board();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    //print_inner_board();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    for(int r = 0; r < _row; r++) {
-    //for(int r = 0; r < 3; r++) {    
+    for(int r = 0; r < _row; r++) {   
         change_inner_board_value(r, 0);
         _board->update_cells(r, 0);
         if((r+1) < _row) {
             change_inner_board_value(r+1, 1);
             _board->update_cells(r+1, 1);
         }
-        print_inner_board();
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        //print_inner_board();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 

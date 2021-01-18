@@ -26,12 +26,14 @@ void Board_Generator::draw_board() {
 }
 
 void Board_Generator::update_cell(int row, int col, int val, int prev_row, int prev_col) {
+    std::lock_guard<std::mutex> locker(_mutex);
     mvwprintw(_win, row+1, col+1, "*");
     mvwprintw(_win, prev_row+1, prev_col+1, " ");
     wrefresh(_win); 
 }
 
 void Board_Generator::update_cell(int row, vector<int> &cols, int val) {
+    std::lock_guard<std::mutex> locker(_mutex);
     for(int i=0; i<cols.size(); i++) {
         if(row > 0) { // preventing change when modifying 1st row
             mvwprintw(_win, row, cols[i]+1, " ");    
@@ -44,7 +46,7 @@ void Board_Generator::update_cell(int row, vector<int> &cols, int val) {
 }
 
 void Board_Generator::update_cells(int row, int val) {
-    std::lock_guard<std::mutex> locker(_mutex);
+    //std::lock_guard<std::mutex> locker(_mutex);
     const char *new_val = (val == 0)? " " : "-";
     for(int col = 1; col <= _width-2; col++) {
         mvwprintw(_win, row+1, col, new_val);
