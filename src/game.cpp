@@ -10,6 +10,8 @@ Board value:
 1 - Obstacle (-)
 2 - Vehicle (*)
 3 - Player bullet (|)
+9 - bullet leaves this mark if obstacle found in next step
+8 - obstacle will leave this mark if bullet found in next step
 */
 
 void Game::load_game() {
