@@ -230,6 +230,17 @@ void Game::generate_player_shot(int row, int col) {
     }
 }
 
+bool Game::check_collision_from_bullet_to_obstacle(int bullet_row, int bullet_col) {
+    if(get_inner_board_cell(bullet_row, bullet_col) == 1 || get_inner_board_cell(bullet_row, bullet_col) == 8) { // if obstacle found in this cell
+        return true;
+    }
+    return false;
+}
+
+void Game::action_after_bullet_collides_with_obstacle(int bullet_row, int bullet_col) {
+    
+}
+
 bool Game::check_collision_from_obstacle(int row, int col) {
     if(get_inner_board_cell(row, col) == 2) { // obstacle found vehicle in this position
         return true;

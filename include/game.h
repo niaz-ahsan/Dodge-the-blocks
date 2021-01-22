@@ -43,6 +43,8 @@ private:
     void post_game_over();
     bool check_collision_from_vehicle(int, int);
     bool check_collision_from_obstacle(int, int);
+    bool check_collision_from_bullet_to_obstacle(int, int);
+    void action_after_bullet_collides_with_obstacle(int, int);
     void stop_game();
     int get_obstacle_delay();
     int get_obstacle_gap();
