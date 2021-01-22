@@ -208,13 +208,20 @@ void Game::generate_single_obstacle() {
 
 void Game::generate_player_shot(int row, int col) {
     for(int i = row; i > 0; i--) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-        change_inner_board_value(i-1, col, 3);
-        _board->update_cell(i-1, col, 3);
-        if(i < row) {
-            change_inner_board_value(i, col, 0);
-            _board->empty_the_cell(i, col);
+        if(check_collision_from_bullet_to_obstacle(i-1, col)) {
+            // if next step has a collision
+            action_after_bullet_collides_with_obstacle(i, col);
+            break;
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            change_inner_board_value(i-1, col, 3);
+            _board->update_cell(i-1, col, 3);
+            if(i < row) {
+                change_inner_board_value(i, col, 0);
+                _board->empty_the_cell(i, col);
+            }
         }
+        
     }
 }
 
@@ -229,10 +236,9 @@ bool Game::check_collision_from_bullet_to_obstacle(int bullet_row, int bullet_co
 void Game::action_after_bullet_collides_with_obstacle(int bullet_row, int bullet_col) {
     // change inner board value to 9 in prev cell
     // call board empty_the_cell() to show nothing in that cell
-    //std::lock_guard<std::mutex> locker(_mutex);
-    change_inner_board_value(bullet_row + 1, bullet_col, 9);
-    _board->empty_the_cell(bullet_row + 1, bullet_col);
-    print_inner_board();
+    change_inner_board_value(bullet_row, bullet_col, 9);
+    _board->empty_the_cell(bullet_row, bullet_col);
+    //print_inner_board();
 }
 
 bool Game::check_collision_from_obstacle(int row, int col) {
