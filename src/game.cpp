@@ -119,7 +119,6 @@ void Game::move_my_vehicle() {
                 break; 
             case 32: {
                     // Shot should be fired
-                    // std::async(std::launch::async, &Game::generate_player_shot, this, vehicle_row, vehicle_col);
                     std::thread bullet_thread(&Game::generate_player_shot, this, vehicle_row, vehicle_col);
                     bullet_thread.detach();
                     break; 
@@ -208,29 +207,19 @@ void Game::generate_single_obstacle() {
 }
 
 void Game::generate_player_shot(int row, int col) {
-    // bullet will start its journey from the above row and same col where vehicle is placed
-    int bullet_row = row - 1;
-    int bullet_col = col;
-    change_inner_board_value(bullet_row, bullet_col, 3);
-    _board->update_cell(bullet_row, bullet_col, 3);
-    //print_inner_board();
-    
-    // taking bullet upward to destroy blocks/obstacles
-    for(int i = bullet_row-1; i >= 0; i--) {
+    for(int i = row; i > 0; i--) {
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
-        change_inner_board_value(i, bullet_col, 3);
-        change_inner_board_value(i+1, bullet_col, 0);
-        _board->update_cell(i, bullet_col, 3, i+1, bullet_col);
-        if(i == 0) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            change_inner_board_value(i, bullet_col, 0);
-            _board->empty_the_cell(i, bullet_col);
+        change_inner_board_value(i-1, col, 3);
+        _board->update_cell(i-1, col, 3);
+        if(i < row) {
+            change_inner_board_value(i, col, 0);
+            _board->empty_the_cell(i, col);
         }
-        //print_inner_board();
     }
 }
 
 bool Game::check_collision_from_bullet_to_obstacle(int bullet_row, int bullet_col) {
+    //std::lock_guard<std::mutex> locker(_mutex);
     if(get_inner_board_cell(bullet_row, bullet_col) == 1 || get_inner_board_cell(bullet_row, bullet_col) == 8) { // if obstacle found in this cell
         return true;
     }
@@ -238,7 +227,12 @@ bool Game::check_collision_from_bullet_to_obstacle(int bullet_row, int bullet_co
 }
 
 void Game::action_after_bullet_collides_with_obstacle(int bullet_row, int bullet_col) {
-    
+    // change inner board value to 9 in prev cell
+    // call board empty_the_cell() to show nothing in that cell
+    //std::lock_guard<std::mutex> locker(_mutex);
+    change_inner_board_value(bullet_row + 1, bullet_col, 9);
+    _board->empty_the_cell(bullet_row + 1, bullet_col);
+    print_inner_board();
 }
 
 bool Game::check_collision_from_obstacle(int row, int col) {
