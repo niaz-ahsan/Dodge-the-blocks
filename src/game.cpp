@@ -189,7 +189,10 @@ void Game::generate_obstacles() {
 
 void Game::generate_single_obstacle() {
     int row = 0;
+    std::vector<int> cols;
+    //for()
     change_inner_board_value(row, 1);
+
     _board->update_cells(row, 1);
     //print_inner_board();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -220,8 +223,7 @@ void Game::generate_player_shot(int row, int col) {
                 change_inner_board_value(i, col, 0);
                 _board->empty_the_cell(i, col);
             }
-        }
-        
+        }  
     }
 }
 
@@ -299,6 +301,13 @@ void Game::change_inner_board_value(int row, int val) {
     std::lock_guard<std::mutex> locker(_mutex);
     for(int c = 0; c < _col; c++) {
         _inner_board[row][c] = val;
+    }
+}
+
+void Game::change_inner_board_value(int row, std::vector<int> &cols, int val) {
+    std::lock_guard<std::mutex> locker(_mutex);
+    for(int c = 0; c < cols.size(); c++) {
+        _inner_board[row][cols.at(c)] = val;
     }
 }
 

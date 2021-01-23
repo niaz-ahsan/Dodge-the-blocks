@@ -37,8 +37,9 @@ private:
     void generate_obstacles();
     void generate_single_obstacle();
     void generate_player_shot(int, int);
-    void change_inner_board_value(int, int, int);
-    void change_inner_board_value(int, int);
+    void change_inner_board_value(int, int, int);// change a single value
+    void change_inner_board_value(int, int); // change values of a whole row
+    void change_inner_board_value(int, std::vector<int>&, int); // change values of a row specified by cols
     int get_inner_board_cell(int, int);
     void post_game_over();
     bool check_collision_from_vehicle(int, int);
