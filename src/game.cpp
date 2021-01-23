@@ -3,6 +3,7 @@
 #include <game.h>
 #include <curses.h>
 #include <pthread.h>
+#include "misc.cpp"
 
 /*
 Board value:
@@ -203,12 +204,42 @@ void Game::generate_single_obstacle() {
         change_inner_board_value(r, cols, 0);
         _board->update_cells(r, cols, 0);
         if((r+1) < _row) {
-            change_inner_board_value(r+1, cols, 1);
+            int collision_index = check_collision_from_obstacle_to_bullet(r + 1, cols);
+            if(collision_index > -1) {
+                // there's a collision
+                action_after_obstacle_collides_with_bullet(r + 1, collision_index, cols);
+            } else {
+                // no collision, move as is
+                change_inner_board_value(r+1, cols, 1);
+            }
             _board->update_cells(r+1, cols, 1);
         }
         //print_inner_board();
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
+}
+
+int Game::check_collision_from_obstacle_to_bullet(int row, std::vector<int> &cols) {
+    int index = -1;
+    for(int c = 0; c < cols.size(); c++) {
+        if(get_inner_board_cell(row, cols[c]) == 3 || get_inner_board_cell(row, cols[c]) == 9) {
+            index = c;
+        }    
+    }
+    return index;
+}
+
+void Game::action_after_obstacle_collides_with_bullet(int obs_row, int obs_col, std::vector<int> &cols) {
+    if(get_inner_board_cell(obs_row, obs_col) == 3) {
+        // a bullet found in that cell. Leave mark and nullify
+        change_inner_board_value(obs_row, obs_col, 8);
+    } else if(get_inner_board_cell(obs_row, obs_col) == 9) {
+        // a bullet mark is found. No mark is needed. Nullify everything for the rest of this cell
+        change_inner_board_value(obs_row, obs_col, 0);
+    }
+
+    _board->empty_the_cell(obs_row, obs_col);
+    remove_element_by_value(cols, obs_col);
 }
 
 void Game::generate_player_shot(int row, int col) {
@@ -238,11 +269,14 @@ bool Game::check_collision_from_bullet_to_obstacle(int bullet_row, int bullet_co
 }
 
 void Game::action_after_bullet_collides_with_obstacle(int bullet_row, int bullet_col) {
-    // change inner board value to 9 in prev cell
-    // call board empty_the_cell() to show nothing in that cell
-    change_inner_board_value(bullet_row, bullet_col, 9);
+    if(get_inner_board_cell(bullet_row, bullet_col) == 1) {
+        // an obstacle is there... leave a mark of bullet and nullify
+        change_inner_board_value(bullet_row, bullet_col, 9);
+    } else if(get_inner_board_cell(bullet_row, bullet_col) == 8) {
+        // an obstacle mark is left... just empty the cell. No need to leave a mark
+        change_inner_board_value(bullet_row, bullet_col, 0);
+    }
     _board->empty_the_cell(bullet_row, bullet_col);
-    //print_inner_board();
 }
 
 bool Game::check_collision_from_obstacle(int row, int col) {
