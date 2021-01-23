@@ -130,50 +130,6 @@ void Game::move_my_vehicle() {
     } 
 }
 
-/*void Game::generate_obstacle() {
-    while(!vehicle_created) {
-        // wait till vehicle isn't created
-        std::unique_lock<std::mutex> locker(_mutex);
-        _cv.wait(locker);
-    }
-
-    while(game_should_go_on) {
-        int bound = rand() % (_col/2 + 3) + 1;
-        int row = 0;
-
-        std::vector<int> cols;
-        for(int i=0; i<bound; i++) {
-            change_inner_board_value(row, i, 1);
-            cols.push_back(i);
-        }
-        for(int i=bound + get_obstacle_gap(); i<_col; i++) {
-            change_inner_board_value(row, i, 1);
-            cols.push_back(i);
-        }
-        int row = 0;
-        _board->update_cell(row, cols, 1);
-        
-        //moving downward
-        for(int r = 0; r < _row; r++) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(get_obstacle_delay())); // waiting time of updating obstacle row
-            for(int c = 0; c < cols.size(); c++) {
-                change_inner_board_value(r, cols[c], 0); // changing current row val to 0
-                if(r < _row - 1) { // shouldn't do this if this is last row. 
-                    if(check_collision_from_obstacle(r+1, cols[c])) {
-                        stop_game();
-                        break;
-                    }
-                    change_inner_board_value(r+1, cols[c], 1); // Taking obstacle in below row 
-                }
-            }
-            _board->update_cell(r+1, cols, 1);
-            if(!game_should_go_on) break; 
-        }
-        if(!game_should_go_on) break; 
-        score++; // each obstacle goes out of the board, score increases.
-    }  
-}*/
-
 void Game::generate_obstacles() {
     while(!vehicle_created) {
         // wait till vehicle isn't created
