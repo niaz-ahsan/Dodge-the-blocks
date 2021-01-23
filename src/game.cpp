@@ -190,19 +190,21 @@ void Game::generate_obstacles() {
 void Game::generate_single_obstacle() {
     int row = 0;
     std::vector<int> cols;
-    //for()
-    change_inner_board_value(row, 1);
-
-    _board->update_cells(row, 1);
-    //print_inner_board();
+    // init vector with all cols
+    for(int c = 0; c < _col; c++) {
+        cols.push_back(c);
+    }
+    // changing values & updating the cells
+    change_inner_board_value(row, cols, 1);
+    _board->update_cells(row, cols, 1);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     for(int r = 0; r < _row; r++) {   
-        change_inner_board_value(r, 0);
-        _board->update_cells(r, 0);
+        change_inner_board_value(r, cols, 0);
+        _board->update_cells(r, cols, 0);
         if((r+1) < _row) {
-            change_inner_board_value(r+1, 1);
-            _board->update_cells(r+1, 1);
+            change_inner_board_value(r+1, cols, 1);
+            _board->update_cells(r+1, cols, 1);
         }
         //print_inner_board();
         std::this_thread::sleep_for(std::chrono::milliseconds(500));

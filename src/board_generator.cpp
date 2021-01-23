@@ -40,7 +40,7 @@ void Board_Generator::update_cell(int row, int col, int val) {
     wrefresh(_win); 
 }
 
-void Board_Generator::update_cell(int row, vector<int> &cols, int val) {
+/*void Board_Generator::update_cells(int row, vector<int> &cols, int val) {
     std::lock_guard<std::mutex> locker(_mutex);
     for(int i=0; i<cols.size(); i++) {
         if(row > 0) { // preventing change when modifying 1st row
@@ -51,19 +51,28 @@ void Board_Generator::update_cell(int row, vector<int> &cols, int val) {
         }       
     }
     wrefresh(_win);
+}*/
+
+void Board_Generator::update_cells(int row, vector<int> &cols, int val) {
+    std::lock_guard<std::mutex> locker(_mutex);
+    const char *new_val = (val == 1)? "-" : " ";
+    for(int c = 0; c < cols.size(); c++) {
+        mvwprintw(_win, row + 1, cols[c] + 1, new_val);
+    }
+    wrefresh(_win);
 }
 
 void Board_Generator::update_cells(int row, int val) {
     std::lock_guard<std::mutex> locker(_mutex);
     const char *new_val = (val == 0)? " " : "-";
     for(int col = 1; col <= _width-2; col++) {
-        mvwprintw(_win, row+1, col, new_val);
+        mvwprintw(_win, row + 1, col, new_val);
     }
     wrefresh(_win);
 }
 
 void Board_Generator::empty_the_cell(int row, int col) {
     std::lock_guard<std::mutex> locker(_mutex);
-    mvwprintw(_win, row+1, col+1, " ");
+    mvwprintw(_win, row + 1, col + 1, " ");
     wrefresh(_win);
 }
