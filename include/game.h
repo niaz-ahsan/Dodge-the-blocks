@@ -27,7 +27,7 @@ private:
     int _row;
     int _col;
     int score = 0;
-    int gap_percentage_compared_to_width = 10;
+    int gap_percentage_compared_to_width = 10; // 10% gap compared to the overall width of inner matrix
     WINDOW *_win;
     int obstacle_stream_delay;  // inscreases to get more dense obstacle
     int obstacle_moving_delay; 
@@ -49,8 +49,9 @@ private:
     int get_inner_board_cell(int, int);
     void post_game_over();
     bool check_collision_from_vehicle(int, int);
-    bool check_collision_from_obstacle(int, int);
+    bool check_collision_from_obstacle(int, std::vector<int>&);
     void stop_game();
+    int get_gap_start_index();
     //int get_obstacle_delay();
 };
 

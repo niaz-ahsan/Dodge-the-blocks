@@ -28,13 +28,15 @@ void Game::launch_game() {
 
     // generating and moving obstacle continuously
     std::future<void> obstacle_thread = std::async(std::launch::async, &Game::generate_obstacles, this);
+    //std::thread obstacle_thread(&Game::generate_obstacles, this);
 
     // creating my vehicle thread
     std::future<void> vehicle_thread = std::async(std::launch::async, &Game::move_my_vehicle, this);
+    //std::thread vehicle_thread(&Game::move_my_vehicle, this);
     
     // returns once game is over
-    vehicle_thread.wait();
     obstacle_thread.wait();
+    vehicle_thread.wait();
 
     // display text after game is over
     post_game_over();
@@ -116,7 +118,10 @@ void Game::move_my_vehicle() {
             default:
                 break;
         }
-    } 
+    }
+
+    change_inner_board_value(vehicle_row, vehicle_col, 0); 
+    _board->empty_the_cell(vehicle_row, vehicle_col);
 }
 
 void Game::generate_obstacles() {
@@ -127,6 +132,7 @@ void Game::generate_obstacles() {
     }   
 
     while(game_should_go_on) {
+        if(!game_should_go_on) break;
         std::thread obs(&Game::generate_single_obstacle, this);
         obs.detach();
         std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_stream_delay));
@@ -135,10 +141,14 @@ void Game::generate_obstacles() {
 
 void Game::generate_single_obstacle() {
     int row = 0;
+    int gap_start = get_gap_start_index();
+    int gap_end = gap_start + (obstacle_gap - 1);
     std::vector<int> cols;
     // init vector with all cols
     for(int c = 0; c < _col; c++) {
-        cols.push_back(c);
+        if(c < gap_start || c > gap_end) {
+            cols.push_back(c);
+        }
     }
     // changing values & updating the cells
     change_inner_board_value(row, cols, 1);
@@ -146,8 +156,15 @@ void Game::generate_single_obstacle() {
     std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_moving_delay));
 
     for(int r = 0; r < _row; r++) {    
-        if((r + 1) < _row) {
-            change_inner_board_value(r+1, cols, 1);
+        if(!game_should_go_on) {
+            break;
+        }
+        if((r + 1) < _row && game_should_go_on) {
+            if(check_collision_from_obstacle(r + 1, cols)) {
+                stop_game();
+                //break;
+            }
+            change_inner_board_value(r + 1, cols, 1);
             _board->update_cells(r + 1, cols, 1);
         }
         change_inner_board_value(r, cols, 0);
@@ -156,9 +173,16 @@ void Game::generate_single_obstacle() {
     }
 }
 
-bool Game::check_collision_from_obstacle(int row, int col) {
-    if(get_inner_board_cell(row, col) == 2) { // obstacle found vehicle in this position
-        return true;
+int Game::get_gap_start_index() {
+    int index = rand() % _col;
+    return index;
+}
+
+bool Game::check_collision_from_obstacle(int row, std::vector<int> &cols) {
+    for(int c = 0; c < cols.size(); c++) {
+        if(get_inner_board_cell(row, cols.at(c)) == 2) { // obstacle found vehicle in this position
+            return true;
+        }
     }
     return false;
 }
@@ -203,6 +227,7 @@ int Game::get_obstacle_gap() {
 void Game::stop_game() {
     std::lock_guard<std::mutex> locker(_mutex);
     game_should_go_on = false;
+    //show_crash_message();
 }
 
 void Game::change_inner_board_value(int b_row, int b_col, int val) {
