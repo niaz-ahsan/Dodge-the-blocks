@@ -34,9 +34,7 @@ private:
     int obstacle_gap; // gap for vehicle to pass through
     std::unique_ptr<Board_Generator> _board;
     std::mutex _mutex;
-    //std::mutex _mutex_shooting;
     std::condition_variable _cv;
-    //std::condition_variable _cv_shooting;
     bool game_should_go_on = true; 
     bool vehicle_created = false; // obstacle generation should wait until player/vehicle is created... this var controls that
     int gap_generation_direction = 1;

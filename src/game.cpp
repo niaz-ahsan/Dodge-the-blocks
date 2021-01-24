@@ -175,6 +175,7 @@ void Game::generate_single_obstacle(int gap_start, int gap_end) {
         _board->update_cells(r, cols, 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_moving_delay));
     }
+    score++;
 }
 
 int Game::get_gap_start_index(int prev_gap_start) {
