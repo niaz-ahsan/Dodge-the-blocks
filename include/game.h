@@ -50,6 +50,7 @@ private:
     bool check_collision_from_obstacle(int, std::vector<int>&);
     void stop_game();
     int get_gap_start_index(int);
+    void update_obstacle_delays();
     //int get_obstacle_delay();
 };
 

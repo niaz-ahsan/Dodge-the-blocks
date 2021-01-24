@@ -176,6 +176,7 @@ void Game::generate_single_obstacle(int gap_start, int gap_end) {
         std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_moving_delay));
     }
     score++;
+    update_obstacle_delays();
 }
 
 int Game::get_gap_start_index(int prev_gap_start) {
@@ -215,40 +216,28 @@ bool Game::check_collision_from_vehicle(int row, int col) {
     return false;
 } 
 
-/*int Game::get_obstacle_delay() {
+void Game::update_obstacle_delays() {
     if(score <= 5) {
-        obstacle_delay = 200;
+        obstacle_stream_delay = 2000;
+        obstacle_moving_delay = 800;
     } else if(score > 5 && score <= 10) {
-        obstacle_delay = 160;
+        obstacle_stream_delay = 1200;
+        obstacle_moving_delay = 450;
     } else if(score > 10 && score <= 20) {
-        obstacle_delay = 120;
+        obstacle_stream_delay = 1000;
+        obstacle_moving_delay = 200;
     } else if(score > 20 && score <= 30) {
-        obstacle_delay = 80;
+        obstacle_stream_delay = 500;
+        obstacle_moving_delay = 100;
     } else {
-        obstacle_delay = 50;
-    } 
-    return obstacle_delay;
-}
-
-int Game::get_obstacle_gap() {
-    if(score <= 10) {
-        obstacle_max_gap = 6; 
-    } else if(score > 10 && score <= 20) {
-        obstacle_max_gap = 5;
-    } else if(score > 20 && score <= 30) {
-        obstacle_max_gap = 4;
-    } else if(score > 30 && score <= 40) {
-        obstacle_max_gap = 3;
-    } else  {
-        obstacle_max_gap = 2;
+        obstacle_stream_delay = 250;
+        obstacle_moving_delay = 100;
     }
-    return obstacle_max_gap;
-}*/
+}
 
 void Game::stop_game() {
     std::lock_guard<std::mutex> locker(_mutex);
     game_should_go_on = false;
-    //show_crash_message();
 }
 
 void Game::change_inner_board_value(int b_row, int b_col, int val) {
