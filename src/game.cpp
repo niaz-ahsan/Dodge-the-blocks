@@ -32,7 +32,6 @@ void Game::launch_game() {
     // creating my vehicle thread
     std::future<void> vehicle_thread = std::async(std::launch::async, &Game::move_my_vehicle, this);
     
-
     // returns once game is over
     vehicle_thread.wait();
     obstacle_thread.wait();
@@ -130,7 +129,7 @@ void Game::generate_obstacles() {
     while(game_should_go_on) {
         std::thread obs(&Game::generate_single_obstacle, this);
         obs.detach();
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_stream_delay));
     }
 }
 
@@ -144,7 +143,7 @@ void Game::generate_single_obstacle() {
     // changing values & updating the cells
     change_inner_board_value(row, cols, 1);
     _board->update_cells(row, cols, 1);
-    std::this_thread::sleep_for(std::chrono::milliseconds(400));
+    std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_moving_delay));
 
     for(int r = 0; r < _row; r++) {    
         if((r + 1) < _row) {
@@ -153,7 +152,7 @@ void Game::generate_single_obstacle() {
         }
         change_inner_board_value(r, cols, 0);
         _board->update_cells(r, cols, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(400));
+        std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_moving_delay));
     }
 }
 
@@ -171,7 +170,7 @@ bool Game::check_collision_from_vehicle(int row, int col) {
     return false;
 } 
 
-int Game::get_obstacle_delay() {
+/*int Game::get_obstacle_delay() {
     if(score <= 5) {
         obstacle_delay = 200;
     } else if(score > 5 && score <= 10) {
@@ -199,7 +198,7 @@ int Game::get_obstacle_gap() {
         obstacle_max_gap = 2;
     }
     return obstacle_max_gap;
-}
+}*/
 
 void Game::stop_game() {
     std::lock_guard<std::mutex> locker(_mutex);
