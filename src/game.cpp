@@ -9,9 +9,6 @@ Board value:
 0 - Empty cell
 1 - Obstacle (-)
 2 - Vehicle (*)
-3 - Player bullet (|)
-9 - bullet leaves this mark if obstacle found in next step
-8 - obstacle will leave this mark if bullet found in next step
 */
 
 void Game::load_game() {
@@ -116,13 +113,7 @@ void Game::move_my_vehicle() {
                     int prev_col = vehicle_col - 1;
                     _board->update_cell(vehicle_row, vehicle_col, 2, prev_row, prev_col);
                 }    
-                break; 
-            case 32: {
-                    // Shot should be fired
-                    std::thread bullet_thread(&Game::generate_player_shot, this, vehicle_row, vehicle_col);
-                    bullet_thread.detach();
-                    break; 
-                }   
+                break;    
             default:
                 break;
         }
@@ -155,83 +146,15 @@ void Game::generate_single_obstacle() {
     _board->update_cells(row, cols, 1);
     std::this_thread::sleep_for(std::chrono::milliseconds(400));
 
-    for(int r = 0; r < _row; r++) {   
-    //for(int r = 0; r < 2; r++) {   
+    for(int r = 0; r < _row; r++) {    
         if((r + 1) < _row) {
-            /*int collision_index = check_collision_from_obstacle_to_bullet(r + 1, cols);
-            if(collision_index >= 0) {
-                // there's a collision
-                //action_after_obstacle_collides_with_bullet(r + 1, collision_index, cols);
-            }*/
             change_inner_board_value(r+1, cols, 1);
             _board->update_cells(r + 1, cols, 1);
         }
         change_inner_board_value(r, cols, 0);
         _board->update_cells(r, cols, 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(400));
-        //print_inner_board();
     }
-}
-
-int Game::check_collision_from_obstacle_to_bullet(int row, std::vector<int> &cols) {
-    int index = -1;
-    for(int c = 0; c < cols.size(); c++) {
-        if(get_inner_board_cell(row, cols.at(c)) == 3 || get_inner_board_cell(row, cols.at(c)) == 9) {
-            index = c;
-            break;
-        }    
-    }
-    return index;
-}
-
-void Game::action_after_obstacle_collides_with_bullet(int obs_row, int obs_col, std::vector<int> &cols) {
-    if(get_inner_board_cell(obs_row, obs_col) == 3) {
-        // a bullet found in that cell. Leave mark and nullify
-        change_inner_board_value(obs_row, obs_col, 8);
-    } else if(get_inner_board_cell(obs_row, obs_col) == 9) {
-        // a bullet mark is found. No mark is needed. Nullify everything for the rest of this cell
-        change_inner_board_value(obs_row, obs_col, 0);
-    }
-
-    _board->empty_the_cell(obs_row, obs_col);
-}
-
-void Game::generate_player_shot(int row, int col) {
-    for(int i = row; i > 0; i--) {
-        if(check_collision_from_bullet_to_obstacle(i-1, col)) {
-            // if next step has a collision
-            action_after_bullet_collides_with_obstacle(i-1, col);
-            break;
-        } else {
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            change_inner_board_value(i-1, col, 3);
-            _board->update_cell(i-1, col, 3);
-            if(i < row) {
-                change_inner_board_value(i, col, 0);
-                _board->empty_the_cell(i, col);
-            }
-        }  
-        print_inner_board();
-    }
-    print_inner_board();
-}
-
-bool Game::check_collision_from_bullet_to_obstacle(int bullet_row, int bullet_col) {
-    if(get_inner_board_cell(bullet_row, bullet_col) == 1 || get_inner_board_cell(bullet_row, bullet_col) == 8) { // if obstacle found in this cell
-        return true;
-    }
-    return false;
-}
-
-void Game::action_after_bullet_collides_with_obstacle(int bullet_row, int bullet_col) {
-    if(get_inner_board_cell(bullet_row, bullet_col) == 1) {
-        // an obstacle is there... leave a mark of bullet and nullify
-        change_inner_board_value(bullet_row + 1, bullet_col, 9);
-    } else if(get_inner_board_cell(bullet_row, bullet_col) == 8) {
-        // an obstacle mark is left... just empty the cell. No need to leave a mark
-        change_inner_board_value(bullet_row + 1, bullet_col, 0);
-    }
-    _board->empty_the_cell(bullet_row + 1, bullet_col);
 }
 
 bool Game::check_collision_from_obstacle(int row, int col) {

@@ -36,7 +36,6 @@ private:
     void move_my_vehicle();
     void generate_obstacles();
     void generate_single_obstacle();
-    void generate_player_shot(int, int);
     void change_inner_board_value(int, int, int);// change a single value
     void change_inner_board_value(int, int); // change values of a whole row
     void change_inner_board_value(int, std::vector<int>&, int); // change values of a row specified by cols
@@ -44,10 +43,6 @@ private:
     void post_game_over();
     bool check_collision_from_vehicle(int, int);
     bool check_collision_from_obstacle(int, int);
-    bool check_collision_from_bullet_to_obstacle(int, int);
-    void action_after_bullet_collides_with_obstacle(int, int);
-    int check_collision_from_obstacle_to_bullet(int, std::vector<int>&); // returns the col where it might collide with the bullet in the specific row
-    void action_after_obstacle_collides_with_bullet(int, int, std::vector<int>&);
     void stop_game();
     int get_obstacle_delay();
     int get_obstacle_gap();
