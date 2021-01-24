@@ -1,2 +1,2 @@
-board_width 30
-board_length 15
+board_width 70
+board_length 35

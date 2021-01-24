@@ -3,7 +3,6 @@
 #include <game.h>
 #include <curses.h>
 #include <pthread.h>
-#include "misc.cpp"
 
 /*
 Board value:
@@ -137,14 +136,11 @@ void Game::generate_obstacles() {
         _cv.wait(locker);
     }   
 
-    std::thread obs(&Game::generate_single_obstacle, this);
-    obs.detach();
-
-    /*while(game_should_go_on) {
+    while(game_should_go_on) {
         std::thread obs(&Game::generate_single_obstacle, this);
         obs.detach();
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    }*/
+    }
 }
 
 void Game::generate_single_obstacle() {
@@ -157,28 +153,23 @@ void Game::generate_single_obstacle() {
     // changing values & updating the cells
     change_inner_board_value(row, cols, 1);
     _board->update_cells(row, cols, 1);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(400));
 
     for(int r = 0; r < _row; r++) {   
     //for(int r = 0; r < 2; r++) {   
         if((r + 1) < _row) {
-            int collision_index = check_collision_from_obstacle_to_bullet(r + 1, cols);
-            mvwprintw(_win, 0, 33, "Index %d", collision_index);
-            wrefresh(_win);
+            /*int collision_index = check_collision_from_obstacle_to_bullet(r + 1, cols);
             if(collision_index >= 0) {
                 // there's a collision
-                action_after_obstacle_collides_with_bullet(r + 1, collision_index, cols);
-            } /*else {
-                // no collision, move as is
-                change_inner_board_value(r+1, cols, 1);
+                //action_after_obstacle_collides_with_bullet(r + 1, collision_index, cols);
             }*/
             change_inner_board_value(r+1, cols, 1);
             _board->update_cells(r + 1, cols, 1);
         }
-        change_inner_board_value(r, 0);
-        _board->update_cells(r, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        print_inner_board();
+        change_inner_board_value(r, cols, 0);
+        _board->update_cells(r, cols, 0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(400));
+        //print_inner_board();
     }
 }
 
@@ -203,7 +194,6 @@ void Game::action_after_obstacle_collides_with_bullet(int obs_row, int obs_col, 
     }
 
     _board->empty_the_cell(obs_row, obs_col);
-    remove_element_by_value(cols, obs_col);
 }
 
 void Game::generate_player_shot(int row, int col) {
@@ -213,7 +203,7 @@ void Game::generate_player_shot(int row, int col) {
             action_after_bullet_collides_with_obstacle(i-1, col);
             break;
         } else {
-            std::this_thread::sleep_for(std::chrono::milliseconds(400));
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
             change_inner_board_value(i-1, col, 3);
             _board->update_cell(i-1, col, 3);
             if(i < row) {

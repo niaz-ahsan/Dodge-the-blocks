@@ -8,13 +8,13 @@ file(GLOB SOURCES "src/*.cpp")
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}" -pthread)
 
-project(ShootTheBlocks)
+project(DodgeTheBlocks)
 
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
 
-add_executable(ShootTheBlocks ${SOURCES})
-target_link_libraries(ShootTheBlocks ${CURSES_LIBRARIES})
+add_executable(DodgeTheBlocks ${SOURCES})
+target_link_libraries(DodgeTheBlocks ${CURSES_LIBRARIES})
 
 find_package(Threads REQUIRED)
-target_link_libraries(ShootTheBlocks Threads::Threads)
+target_link_libraries(DodgeTheBlocks Threads::Threads)
