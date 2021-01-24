@@ -39,10 +39,10 @@ private:
     //std::condition_variable _cv_shooting;
     bool game_should_go_on = true; 
     bool vehicle_created = false; // obstacle generation should wait until player/vehicle is created... this var controls that
-    //bool shot_fired = false;
+    int gap_generation_direction = 1;
     void move_my_vehicle();
     void generate_obstacles();
-    void generate_single_obstacle();
+    void generate_single_obstacle(int, int);
     void change_inner_board_value(int, int, int);// change a single value
     void change_inner_board_value(int, int); // change values of a whole row
     void change_inner_board_value(int, std::vector<int>&, int); // change values of a row specified by cols
@@ -51,7 +51,7 @@ private:
     bool check_collision_from_vehicle(int, int);
     bool check_collision_from_obstacle(int, std::vector<int>&);
     void stop_game();
-    int get_gap_start_index();
+    int get_gap_start_index(int);
     //int get_obstacle_delay();
 };
 

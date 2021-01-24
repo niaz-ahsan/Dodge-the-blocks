@@ -9,6 +9,7 @@ Board value:
 0 - Empty cell
 1 - Obstacle (-)
 2 - Vehicle (*)
+gap_generation_direction - 1 : generate on right of prev | 0 : generate on left of prev
 */
 
 void Game::load_game() {
@@ -130,19 +131,22 @@ void Game::generate_obstacles() {
         std::unique_lock<std::mutex> locker(_mutex);
         _cv.wait(locker);
     }   
+    
+    int gap_start = rand() % (_col - obstacle_gap);
+    int gap_end = gap_start + (obstacle_gap - 1);
 
     while(game_should_go_on) {
         if(!game_should_go_on) break;
-        std::thread obs(&Game::generate_single_obstacle, this);
+        gap_start = get_gap_start_index(gap_start);
+        gap_end = gap_start + (obstacle_gap - 1);
+        std::thread obs(&Game::generate_single_obstacle, this, gap_start, gap_end);
         obs.detach();
         std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_stream_delay));
     }
 }
 
-void Game::generate_single_obstacle() {
+void Game::generate_single_obstacle(int gap_start, int gap_end) {
     int row = 0;
-    int gap_start = get_gap_start_index();
-    int gap_end = gap_start + (obstacle_gap - 1);
     std::vector<int> cols;
     // init vector with all cols
     for(int c = 0; c < _col; c++) {
@@ -173,9 +177,25 @@ void Game::generate_single_obstacle() {
     }
 }
 
-int Game::get_gap_start_index() {
-    int index = rand() % _col;
-    return index;
+int Game::get_gap_start_index(int prev_gap_start) {
+    int jump = obstacle_gap / 2;
+    int new_start;
+    if(gap_generation_direction) {
+        new_start = prev_gap_start + jump;
+        if(new_start + (obstacle_gap - 1) > _col) {
+            // out of bounds
+            new_start = prev_gap_start - jump;
+            gap_generation_direction = 0;
+        }
+    } else {
+        new_start = prev_gap_start - jump;
+        if(new_start + (obstacle_gap - 1) < 0) {
+            // out of bounds
+            new_start = prev_gap_start + jump;
+            gap_generation_direction = 1;
+        }
+    }
+    return new_start;
 }
 
 bool Game::check_collision_from_obstacle(int row, std::vector<int> &cols) {
