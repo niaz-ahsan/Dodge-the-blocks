@@ -38,6 +38,12 @@ int main() {
         return endwin();
     }
 
+    if(has_colors() == FALSE)
+	{	endwin();
+		printf("Your terminal does not support color\n");
+		exit(1);
+	}
+
     //Initial messages AKA instructions
     attron(A_BOLD | A_UNDERLINE);
     printw("Welcome to Pass the Block challenge\n");

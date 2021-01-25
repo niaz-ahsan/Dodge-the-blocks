@@ -24,6 +24,13 @@ private:
     unsigned int _width; 
     WINDOW *_win;
     std::mutex _mutex;
+
+    void initiate_colors();
+    void draw_horizontal_border(int, int);
+    void draw_vertical_border(int, int);
+    void draw_player(int, int);
+    void draw_obstacle(int, int);
+    void draw_empty_cell(int, int);
 };
 
 #endif
