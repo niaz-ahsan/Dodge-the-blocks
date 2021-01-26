@@ -48,11 +48,16 @@ int main() {
 	}
 
     //Initial messages AKA instructions
+    int r, c;
     attron(A_BOLD | A_UNDERLINE);
-    printw("Welcome to Pass the Block challenge\n");
+    printw("Dodge The Blocks\n");
     attroff(A_BOLD | A_UNDERLINE);
-    printw("*  = Player\n");
-    printw("-  = Incoming blocks\n");
+    getyx(stdscr, r, c);
+    my_display::draw_player(r, c);
+    printw(" = Player\n");
+    getyx(stdscr, r, c);
+    my_display::draw_obstacle(r, c);
+    printw(" = Incoming blocks\n");
     printw("Use ARROW KEYs to avoid block and up your score\n");
     printw("Board dimension can be changed from config.txt\n");
     printw("Heads up: Difficulty level increases as score goes up\n");

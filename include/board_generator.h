@@ -10,7 +10,6 @@ using std::vector;
 
 class Board_Generator {
 public:
-    //Board_Generator(int &l, int &w, WINDOW *win) : _length(l), _width(w), _win(win) {} 
     Board_Generator(int &l, int &w) : _length(l), _width(w) {} 
     ~Board_Generator() {} //delwin(_win); }
 
@@ -23,7 +22,6 @@ public:
 private:
     unsigned int _length;
     unsigned int _width; 
-    //WINDOW *_win;
     std::mutex _mutex;
 
     void initiate_colors();
