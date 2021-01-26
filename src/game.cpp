@@ -176,11 +176,11 @@ void Game::generate_single_obstacle(int gap_start, int gap_end) {
         std::this_thread::sleep_for(std::chrono::milliseconds(obstacle_moving_delay));
     }
     score++;
-    update_obstacle_delays();
+    //update_obstacle_delays();
 }
 
 int Game::get_gap_start_index(int prev_gap_start) {
-    int jump = obstacle_gap / 2;
+    int jump = (obstacle_gap / 2);
     int new_start;
     if(gap_generation_direction) {
         new_start = prev_gap_start + jump;
@@ -217,6 +217,7 @@ bool Game::check_collision_from_vehicle(int row, int col) {
 } 
 
 void Game::update_obstacle_delays() {
+    std::lock_guard<std::mutex> locker(_mutex);
     if(score <= 5) {
         obstacle_stream_delay = 2000;
         obstacle_moving_delay = 800;

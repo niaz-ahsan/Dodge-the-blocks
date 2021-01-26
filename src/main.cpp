@@ -7,6 +7,8 @@
 #include <curses.h>
 #include <game.h>
 
+#include "colors.cpp"
+
 int main() {
     int min_board_width = 30;
     int max_board_width = 100;
@@ -24,6 +26,8 @@ int main() {
     noecho();
     cbreak();
     keypad(stdscr, TRUE);
+
+    my_display::initiate_colors();
 
     // validating user input on board dimension
     if(board_width < min_board_width || board_width > max_board_width || (board_width / board_length) != 2) {

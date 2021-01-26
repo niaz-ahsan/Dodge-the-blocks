@@ -4,15 +4,12 @@
 #include <board_generator.h>
 #include <game.h>
 
-#define GRASS_PAIR     1
-#define WATER_PAIR     2
-#define MOUNTAIN_PAIR  3
-#define PLAYER_PAIR    4
+#include "colors.cpp"
 
 using std::vector;
 
 void Board_Generator::draw_board() {
-    initiate_colors();
+    my_display::initiate_colors();
     clear();
     for(int row = 0; row < _length; row++) {
         draw_vertical_border(row, 0);
@@ -30,14 +27,6 @@ void Board_Generator::draw_board() {
     printw("-  = Incoming blocks\n");
     printw("Use ARROW KEYs to avoid block and up your score\n");
     refresh();
-}
-
-void Board_Generator::initiate_colors() {
-    start_color();
-    init_pair(GRASS_PAIR, COLOR_YELLOW, COLOR_GREEN);
-    init_pair(WATER_PAIR, COLOR_CYAN, COLOR_BLUE);
-    init_pair(MOUNTAIN_PAIR, COLOR_BLACK, COLOR_WHITE);
-    init_pair(PLAYER_PAIR, COLOR_RED, COLOR_GREEN);
 }
 
 void Board_Generator::update_cell(int row, int col, int val, int prev_row, int prev_col) {
