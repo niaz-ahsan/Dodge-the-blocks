@@ -285,9 +285,9 @@ void Game::print_inner_board() {
     std::lock_guard<std::mutex> locker(_mutex);
     for(int row=0; row<_row; row++) {
         for(int col=0; col<_col; col++) {
-            mvwprintw(_win, row+30, col, "%d", _inner_board[row][col]);
+            mvprintw(row+30, col, "%d", _inner_board[row][col]);
         }
         printw("\n");
     }
-    wrefresh(_win);
+    refresh();
 }

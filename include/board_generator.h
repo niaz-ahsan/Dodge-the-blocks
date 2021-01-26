@@ -10,8 +10,9 @@ using std::vector;
 
 class Board_Generator {
 public:
-    Board_Generator(int &l, int &w, WINDOW *win) : _length(l), _width(w), _win(win) {} 
-    ~Board_Generator() { delwin(_win); }
+    //Board_Generator(int &l, int &w, WINDOW *win) : _length(l), _width(w), _win(win) {} 
+    Board_Generator(int &l, int &w) : _length(l), _width(w) {} 
+    ~Board_Generator() {} //delwin(_win); }
 
     void draw_board();
     void update_cell(int, int, int, int, int); // specially for updating player/vehicle state change & player bullet movement
@@ -22,7 +23,7 @@ public:
 private:
     unsigned int _length;
     unsigned int _width; 
-    WINDOW *_win;
+    //WINDOW *_win;
     std::mutex _mutex;
 
     void initiate_colors();

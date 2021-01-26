@@ -19,8 +19,8 @@ int main() {
     int board_length = stoi(parser->config_data["length"]);
     int board_width = stoi(parser->config_data["width"]);
     
-    // ncurses window for display
-    WINDOW *win = initscr();    
+    // ncurses window for display   
+    initscr();
     noecho();
     cbreak();
     keypad(stdscr, TRUE);
@@ -34,7 +34,6 @@ int main() {
         printw("Width/Height ratio = 2\n");
         printw("Modify Board dimension in config.txt");
         getch();
-        delwin(win);
         return endwin();
     }
 
@@ -58,20 +57,18 @@ int main() {
     if(ch == 83 || ch == 115) {
         start_game = true;
     } else {
-        delwin(win);
         return endwin();
     }
 
     if(start_game) {
         // Init Board with width & length
-        std::unique_ptr<Board_Generator> board(new Board_Generator(board_length, board_width, win));
+        std::unique_ptr<Board_Generator> board(new Board_Generator(board_length, board_width));
 
         // Init Game 
-        std::unique_ptr<Game> game(new Game(board_length, board_width, win, std::move(board)));
+        std::unique_ptr<Game> game(new Game(board_length, board_width, std::move(board)));
         game->load_game(); // init inner matrix or board
         game->launch_game(); // launching both vehicle and obstacle thread
         
-        delwin(win);
         return endwin();
     }    
 }

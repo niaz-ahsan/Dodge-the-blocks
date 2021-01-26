@@ -12,13 +12,13 @@
 
 class Game {
 public: 
-    Game(int r, int c, WINDOW *win, std::unique_ptr<Board_Generator> board) : _row(r-2), _col(c-2), _win(win), _board(std::move(board)) {
+    Game(int r, int c, std::unique_ptr<Board_Generator> board) : _row(r-2), _col(c-2), _board(std::move(board)) {
         // determie initial gap in each obstacle
         obstacle_gap = (gap_percentage_compared_to_width * _col) / 100;
         obstacle_stream_delay = 2000;
         obstacle_moving_delay = 400;
     }
-    ~Game() { delwin(_win); }
+    ~Game() {} //delwin(_win); }
     void load_game();
     void launch_game();
     void print_inner_board(); // dummy method for test
@@ -28,7 +28,7 @@ private:
     int _col;
     int score = 0;
     int gap_percentage_compared_to_width = 10; // 10% gap compared to the overall width of inner matrix
-    WINDOW *_win;
+    //WINDOW *_win;
     int obstacle_stream_delay;  // inscreases to get more dense obstacle
     int obstacle_moving_delay; 
     int obstacle_gap; // gap for vehicle to pass through
