@@ -52,9 +52,10 @@ int main() {
     attron(A_BOLD | A_UNDERLINE);
     printw("Dodge The Blocks\n\n");
     attroff(A_BOLD | A_UNDERLINE);
+    printw(" ");
     getyx(stdscr, r, c);
     my_display::draw_player(r, c);
-    printw(" = Player\n\n");
+    printw(" = Player\n\n ");
     getyx(stdscr, r, c);
     my_display::draw_obstacle(r, c);
     printw(" = Incoming blocks\n\n");

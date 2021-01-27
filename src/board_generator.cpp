@@ -4,6 +4,7 @@
 #include <board_generator.h>
 #include <game.h>
 
+
 #include "colors.cpp"
 
 using std::vector;
@@ -23,8 +24,14 @@ void Board_Generator::draw_board() {
         my_display::draw_vertical_border(row, _width - 1);
         printw("\n");
     }
-    printw("*  = Player\n");
-    printw("-  = Incoming blocks\n");
+    printw(" ");
+    int r,c;
+    getyx(stdscr, r, c);
+    my_display::draw_player(r, c);
+    printw(" = Player\n\n ");
+    getyx(stdscr, r, c);
+    my_display::draw_obstacle(r, c);
+    printw(" = Incoming blocks\n");
     printw("Use ARROW KEYs to avoid block and up your score\n");
     refresh();
 }
